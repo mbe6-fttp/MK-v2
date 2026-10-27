@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        My Knowledge Plus
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css', v=4) }}"
+    >
+
+     
+</head>
+
+<body data-theme="light">
+
+<div class="app-shell">
+
+    <aside class="sidebar" id="sidebar" aria-label="Navigare principală">
+
+        <div class="brand">
+            <a class="brand-mark" href="{{ url_for('home') }}" aria-label="My Knowledge Plus, pagina principală">
+                <span aria-hidden="true">M</span>
+            </a>
+
+            <a class="brand-copy" href="{{ url_for('home') }}">
+                <div class="brand-title">
+                    My Knowledge Plus
+                </div>
+
+                <div class="brand-subtitle">
+                    SPAȚIUL TĂU DE IDEI
+                </div>
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+
+            <div class="sidebar-label">
+                SPAȚIUL MEU
+            </div>
+
+            <a
+                href="{{ url_for('home') }}"
+                class="sidebar-link {% if request.endpoint == 'home' %}active{% endif %}"
+            >
+                <span class="sidebar-icon" aria-hidden="true">⌂</span>
+                <span>Prezentare generală</span>
+            </a>
+
+            <a
+                href="{{ url_for('add_note') }}"
+                class="sidebar-link {% if request.endpoint == 'add_note' %}active{% endif %}"
+            >
+                <span class="sidebar-icon">＋</span>
+                <span>Notiță nouă</span>
+            </a>
+
+        </div>
+
+        <div class="sidebar-section categories-section">
+
+            <div class="sidebar-label-row">
+                <span class="sidebar-label">
+                    CATEGORII
+                </span>
+
+                <span class="category-total">
+                    {{ sidebar_categories|length }}
+                </span>
+            </div>
+
+            <div class="category-list">
+
+                {% for category in sidebar_categories %}
+
+                <div class="category-item">
+
+                   <a
+                      href="{{ url_for('home', category=category['id']) }}"
+                      class="category-link {% if active_category and active_category['id'] == category['id'] %}active{% endif %}"
+                      {% if active_category and active_category['id'] == category['id'] %}aria-current="page"{% endif %}
+                      >
+
+                       <span class="category-dot"></span>
+
+                       <span class="category-name">
+                         {{ category["name"] }}
+                       </span>
+
+                       <span class="category-count">
+                         {{ category["note_count"] }}
+                       </span>
+
+                    </a>  
+
+                    <form
+                        action="{{ url_for('delete_category', category_id=category['id']) }}"
+                        method="POST"
+                        class="inline-form"
+                        onsubmit="return confirm('Ștergi categoria? Notițele vor rămâne în aplicație fără categorie.');"
+                    >
+                        <button
+                            type="submit"
+                            class="category-delete"
+                            title="Șterge categoria"
+                            aria-label="Șterge categoria {{ category['name'] }}"
+                        >
+                            ×
+                        </button>
+                    </form>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-sidebar">
+                    Nicio categorie încă
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <form
+                action="{{ url_for('add_category') }}"
+                method="POST"
+                class="category-form"
+            >
+
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Adaugă o categorie..."
+                    maxlength="80"
+                    autocomplete="off"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    title="Adaugă categoria"
+                    aria-label="Adaugă categoria"
+                >
+                    +
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <div class="local-status">
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>Datele tale sunt locale</strong>
+                    <span>{{ total_notes }} notițe salvate</span>
+                </div>
+            </div>
+
+        </div>
+
+    </aside>
+
+    <button
+        class="sidebar-backdrop"
+        data-sidebar-close
+        type="button"
+        aria-label="Închide meniul"
+        tabindex="-1"
+    ></button>
+
+    <main class="main-area">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button
+                    class="menu-toggle"
+                    type="button"
+                    aria-label="Deschide meniul"
+                    aria-controls="sidebar"
+                    aria-expanded="false"
+                >
+                    <span class="menu-icon" aria-hidden="true">☰</span>
+                </button>
+
+                <span class="eyebrow">
+                    SPAȚIUL TĂU PERSONAL
+                </span>
+            </div>
+
+            <div class="topbar-right">
+                <span class="local-chip">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    Funcționează local
+                </span>
+
+                <button
+                    class="theme-toggle"
+                    type="button"
+                    data-theme-toggle
+                    aria-label="Activează tema întunecată"
+                    title="Schimbă aspectul"
+                >
+                    <span class="theme-icon" aria-hidden="true">☾</span>
+                    <span class="theme-label">Aspect</span>
+                </button>
+            </div>
+
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+            <div class="flash-stack">
+
+                {% for category, message in messages %}
+
+                <div
+                    class="flash flash-{{ category }}"
+                    role="{% if category == 'error' %}alert{% else %}status{% endif %}"
+                >
+                    {{ message }}
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+         
+
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js', v=4) }}" defer></script>
+
+</body>
+</html>

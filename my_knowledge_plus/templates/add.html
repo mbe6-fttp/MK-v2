@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}
+Notiță nouă — My Knowledge Plus
+{% endblock %}
+
+
+{% block content %}
+
+<section class="editor-page">
+
+    <div class="editor-header">
+
+        <div>
+
+            <div class="section-kicker">
+                SPAȚIU NOU PENTRU O IDEE
+            </div>
+
+            <h1>
+                Scrie o idee nouă
+            </h1>
+
+            <p>
+                Notează acum. Îți vei mulțumi mai târziu.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('home') }}"
+            class="secondary-button"
+        >
+            ← Înapoi la bibliotecă
+        </a>
+
+    </div>
+
+
+    <form
+        action="{{ url_for('add_note') }}"
+        method="POST"
+        class="editor-card"
+    >
+
+        <div class="field">
+
+            <label for="title">
+                Titlu
+            </label>
+
+            <input
+                id="title"
+                name="title"
+                type="text"
+                placeholder="Dă-i un titlu ușor de găsit"
+                maxlength="200"
+                autofocus
+                required
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="category_id">
+                Categorie
+            </label>
+
+            <select
+                id="category_id"
+                name="category_id"
+            >
+
+                <option value="">
+                    Fără categorie
+                </option>
+
+                {% for category in categories %}
+
+                <option
+                    value="{{ category['id'] }}"
+                >
+                    {{ category['name'] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="content">
+                Conținutul notiței
+            </label>
+
+            <textarea
+                id="content"
+                name="content"
+                placeholder="Scrie liber. Ideile nu trebuie să fie perfecte ca să merite păstrate..."
+                required
+            ></textarea>
+
+            <div class="field-hint">
+                <span>Rândurile noi se păstrează automat.</span>
+                <span class="character-count" data-character-count>0 caractere</span>
+            </div>
+
+        </div>
+
+
+        <div class="editor-footer">
+
+            <a
+                href="{{ url_for('home') }}"
+                class="secondary-button"
+            >
+                Renunță
+            </a>
+
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Salvează notița
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

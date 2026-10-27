@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}
+Notițele tale — My Knowledge Plus
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="hero-copy">
+
+        <div class="hero-kicker">
+            <span class="hero-kicker-dot" aria-hidden="true"></span>
+            TOATE IDEILE TALE, ÎNTR-UN SINGUR LOC
+        </div>
+
+        <h1>
+            Idei bune.
+            <span>Ținute aproape.</span>
+        </h1>
+
+        <p>
+            Păstrează lucrurile importante, găsește-le rapid și continuă
+            exact de unde ai rămas.
+        </p>
+
+        <div class="hero-proof">
+            <span class="hero-proof-icon" aria-hidden="true">✓</span>
+            Privat prin design. Notițele rămân pe dispozitivul tău.
+        </div>
+
+        <div class="hero-actions">
+            <a
+                href="{{ url_for('add_note') }}"
+                class="primary-button"
+            >
+                <span aria-hidden="true">＋</span>
+                Creează o notiță
+                <span class="button-arrow" aria-hidden="true">↗</span>
+            </a>
+
+            <a href="#knowledge-list" class="hero-text-link">
+                Explorează colecția
+                <span aria-hidden="true">↓</span>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <div class="art-spark spark-one">✳</div>
+        <div class="art-spark spark-two">✦</div>
+        <div class="art-note art-note-back">
+            <span class="art-note-line line-short"></span>
+            <span class="art-note-line"></span>
+            <span class="art-note-line line-medium"></span>
+        </div>
+        <div class="art-note art-note-front">
+            <span class="art-note-tag"></span>
+            <span class="art-note-title"></span>
+            <span class="art-note-line line-medium"></span>
+            <span class="art-note-line"></span>
+            <span class="art-note-line line-short"></span>
+        </div>
+        <div class="art-badge">
+            <span class="art-badge-icon">✦</span>
+            <span>Ideile tale,<br>mereu la îndemână</span>
+        </div>
+    </div>
+
+</section>
+
+<section class="stats-row" aria-label="Statistici">
+    <article class="stat-card">
+        <span class="stat-icon stat-icon-purple" aria-hidden="true">▤</span>
+        <div>
+            <strong>{{ total_notes }}</strong>
+            <span>notițe salvate</span>
+        </div>
+        <span class="stat-caption">în biblioteca ta</span>
+    </article>
+
+    <article class="stat-card">
+        <span class="stat-icon stat-icon-orange" aria-hidden="true">◈</span>
+        <div>
+            <strong>{{ sidebar_categories|length }}</strong>
+            <span>categorii</span>
+        </div>
+        <span class="stat-caption">pentru idei organizate</span>
+    </article>
+
+    <article class="stat-card stat-card-tip">
+        <span class="stat-icon stat-icon-green" aria-hidden="true">⌕</span>
+        <div>
+            <strong>Găsește orice</strong>
+            <span>în câteva secunde</span>
+        </div>
+        <span class="stat-caption">Apasă <kbd>Ctrl</kbd> <kbd>K</kbd> pentru căutare</span>
+    </article>
+</section>
+
+<section class="search-panel">
+
+    <form
+        action="{{ url_for('home') }}"
+        method="GET"
+        class="search-form"
+    >
+
+        <span class="search-symbol" aria-hidden="true">⌕</span>
+
+        <input
+            id="knowledge-search"
+            type="search"
+            name="q"
+            value="{{ search_query }}"
+            placeholder="Caută în titluri și conținut..."
+            aria-label="Caută în notițe"
+            autocomplete="off"
+        >
+
+        {% if search_query %}
+        <a
+            class="search-clear"
+            href="{{ url_for('home', category=active_category['id'] if active_category else None) }}"
+            aria-label="Șterge căutarea"
+            title="Șterge căutarea"
+        >×</a>
+        {% endif %}
+
+        <kbd class="search-shortcut">/</kbd>
+
+        <button class="search-submit" type="submit" aria-label="Caută">
+            <span aria-hidden="true">↵</span>
+            <span class="search-submit-label">Caută</span>
+        </button>
+
+    </form>
+
+</section>
+
+
+<section class="content-header" id="knowledge-list">
+
+    <div>
+        <div class="section-kicker">
+            {% if active_category %}
+                COLECȚIE
+            {% elif search_query %}
+                REZULTATE
+            {% else %}
+                BIBLIOTECA TA
+            {% endif %}
+        </div>
+
+        {% if active_category %}
+        <h2>{{ active_category["name"] }}</h2>
+
+        {% elif search_query %}
+        <h2>Rezultate pentru „{{ search_query }}”</h2>
+
+        {% else %}
+        <h2>Revino la ideile tale.</h2>
+
+        {% endif %}
+
+        <p class="content-subtitle">
+            {% if active_category %}
+                Notițele din această categorie.
+            {% elif search_query %}
+                Am găsit ce căutai? Notițele potrivite sunt mai jos.
+            {% else %}
+                Cele mai recente notițe, gata să fie continuate.
+            {% endif %}
+        </p>
+
+    </div>
+
+    <div class="result-count">
+        <strong>{{ total_results }}</strong>
+        {% if total_results == 1 %}notiță{% else %}notițe{% endif %}
+    </div>
+
+</section>
+
+
+{% if notes %}
+
+<div class="knowledge-grid">
+
+    {% for note in notes %}
+
+    <article
+        class="knowledge-card"
+        style="--delay: {{ loop.index0 * 70 }}ms"
+    >
+
+        <div class="card-top">
+
+            <div class="card-category">
+                <span class="category-dot"></span>
+
+                {{ note["category_name"] or "Fără categorie" }}
+            </div>
+
+            <span class="card-index">
+                {{ "%02d"|format(loop.index) }}
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <h3>
+                <a href="{{ url_for('view_note', note_id=note['id']) }}">
+                    {{ note["title"] }}
+                </a>
+            </h3>
+
+            <p>
+                {{ note["content"][:220] }}
+
+                {% if note["content"]|length > 220 %}
+                    <span>…</span>
+                {% endif %}
+            </p>
+
+        </div>
+
+
+        <div class="card-bottom">
+
+            <a
+                href="{{ url_for('view_note', note_id=note['id']) }}"
+                class="open-link"
+            >
+            Citește notița
+            <span aria-hidden="true">↗</span>
+            </a>
+
+            <div class="card-actions">
+
+                <a
+                    href="{{ url_for('edit_note', note_id=note['id']) }}"
+                    class="icon-button"
+                    title="Editează"
+                    aria-label="Editează {{ note['title'] }}"
+                >
+                    ✎
+                </a>
+
+                <form
+                    action="{{ url_for('delete_note', note_id=note['id']) }}"
+                    method="POST"
+                    onsubmit="return confirm('Ștergi definitiv această notiță?');"
+                >
+
+                    <button
+                        type="submit"
+                        class="icon-button danger"
+                        title="Șterge"
+                        aria-label="Șterge {{ note['title'] }}"
+                    >
+                        ×
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% if total_pages > 1 %}
+<nav class="pagination" aria-label="Pagini de notițe">
+    {% if page > 1 %}
+    <a
+        class="pagination-button"
+        href="{{ url_for('home', page=page - 1, q=search_query, category=active_category['id'] if active_category else None) }}"
+        rel="prev"
+    >
+        <span aria-hidden="true">←</span>
+        Înapoi
+    </a>
+    {% else %}
+    <span class="pagination-button disabled" aria-disabled="true">
+        <span aria-hidden="true">←</span>
+        Înapoi
+    </span>
+    {% endif %}
+
+    <span class="pagination-status">
+        Pagina <strong>{{ page }}</strong> din {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+    <a
+        class="pagination-button"
+        href="{{ url_for('home', page=page + 1, q=search_query, category=active_category['id'] if active_category else None) }}"
+        rel="next"
+    >
+        Înainte
+        <span aria-hidden="true">→</span>
+    </a>
+    {% else %}
+    <span class="pagination-button disabled" aria-disabled="true">
+        Înainte
+        <span aria-hidden="true">→</span>
+    </span>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+
+<section class="empty-state">
+
+    <div class="empty-icon">
+        +
+    </div>
+
+    {% if search_query or active_category %}
+        <div class="empty-kicker">NICIUN REZULTAT</div>
+        <h2>N-am găsit notița de data aceasta.</h2>
+        <p>Încearcă alt cuvânt sau elimină filtrul curent.</p>
+        <a href="{{ url_for('home') }}" class="secondary-button">Arată toate notițele</a>
+    {% else %}
+        <div class="empty-kicker">PRIMA PAGINĂ E A TA</div>
+        <h2>Începe cu o idee pe care vrei s-o păstrezi.</h2>
+        <p>
+            Scrie o idee, un lucru învățat sau ceva la care vrei să revii.
+            Notițele rămân în acest spațiu privat.
+        </p>
+        <a href="{{ url_for('add_note') }}" class="primary-button">
+            Salvează prima notiță
+        </a>
+    {% endif %}
+
+</section>
+
+{% endif %}
+
+{% endblock %}

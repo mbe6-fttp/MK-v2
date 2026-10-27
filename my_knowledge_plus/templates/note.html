@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+{{ note["title"] }} — My Knowledge Plus
+{% endblock %}
+
+
+{% block content %}
+
+<section class="note-page">
+
+    <div class="note-toolbar">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="secondary-button"
+        >
+            ← Bibliotecă
+        </a>
+
+
+        <div class="note-toolbar-actions">
+
+            <a
+                href="{{ url_for('edit_note', note_id=note['id']) }}"
+                class="secondary-button"
+            >
+                ✎ Editează
+            </a>
+
+
+            <form
+                action="{{ url_for('delete_note', note_id=note['id']) }}"
+                method="POST"
+                onsubmit="return confirm('Ștergi definitiv această notiță?');"
+            >
+
+                <button
+                    type="submit"
+                    class="secondary-button danger-button"
+                >
+                    Șterge notița
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <article class="note-document">
+
+        <div class="note-meta">
+
+            <span class="note-category">
+
+                <span class="category-dot"></span>
+
+                {{ note["category_name"] or "Uncategorized" }}
+
+            </span>
+
+
+            <span class="note-date">
+                Actualizată la {{ note["updated_at"] }}
+            </span>
+
+        </div>
+
+
+        <h1>
+            {{ note["title"] }}
+        </h1>
+
+
+        <div class="note-content">
+            {{ note["content"] }}
+        </div>
+
+    </article>
+
+</section>
+
+{% endblock %}

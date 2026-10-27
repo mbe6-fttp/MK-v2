@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}
+Pagină negăsită — My Knowledge Plus
+{% endblock %}
+
+{% block content %}
+
+<section class="empty-state">
+
+    <div class="empty-icon">
+        404
+    </div>
+
+    <div class="empty-kicker">
+        PAGINĂ NEGĂSITĂ
+    </div>
+
+    <h2>
+        Notița aceasta nu există.
+    </h2>
+
+    <p>
+        E posibil să fi fost ștearsă sau să se fi mutat.
+    </p>
+
+    <a
+        href="{{ url_for('home') }}"
+        class="primary-button"
+    >
+        Înapoi la bibliotecă
+    </a>
+
+</section>
+
+{% endblock %}

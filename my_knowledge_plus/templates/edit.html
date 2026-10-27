@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}
+Editează — {{ note["title"] }}
+{% endblock %}
+
+
+{% block content %}
+
+<section class="editor-page">
+
+    <div class="editor-header">
+
+        <div>
+
+            <div class="section-kicker">
+                ACTUALIZEAZĂ IDEEA
+            </div>
+
+            <h1>
+                Îmbunătățește-ți notița
+            </h1>
+
+            <p>
+                Gândurile bune se schimbă. Editează fără grijă.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('view_note', note_id=note['id']) }}"
+            class="secondary-button"
+        >
+            ← Înapoi la notiță
+        </a>
+
+    </div>
+
+
+    <form
+        action="{{ url_for('edit_note', note_id=note['id']) }}"
+        method="POST"
+        class="editor-card"
+    >
+
+        <div class="field">
+
+            <label for="title">
+                Titlu
+            </label>
+
+            <input
+                id="title"
+                name="title"
+                type="text"
+                value="{{ note['title'] }}"
+                maxlength="200"
+                required
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="category_id">
+                Categorie
+            </label>
+
+            <select
+                id="category_id"
+                name="category_id"
+            >
+
+                <option value="">
+                    Fără categorie
+                </option>
+
+                {% for category in categories %}
+
+                <option
+                    value="{{ category['id'] }}"
+                    {% if note['category_id'] == category['id'] %}
+                        selected
+                    {% endif %}
+                >
+                    {{ category['name'] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label for="content">
+                Conținutul notiței
+            </label>
+
+            <textarea
+                id="content"
+                name="content"
+                required
+            >{{ note['content'] }}</textarea>
+
+            <div class="field-hint">
+                <span>Rândurile noi se păstrează automat.</span>
+                <span class="character-count" data-character-count>0 caractere</span>
+            </div>
+
+        </div>
+
+
+        <div class="editor-footer">
+
+            <a
+                href="{{ url_for('view_note', note_id=note['id']) }}"
+                class="secondary-button"
+            >
+                Renunță
+            </a>
+
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Salvează modificările
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}
