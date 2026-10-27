@@ -1,8 +1,5 @@
 # My Knowledge Plus
 
-O copie independenta a aplicatiei My Knowledge, cu baza de date inclusa.
-Modificarile si notitele salvate aici nu schimba proiectul original.
-
 Interfata My Knowledge Plus este redesenata, disponibila in romana si include
 teme deschisa/intunecata, cautare rapida si un aspect adaptat pentru telefon,
 tableta si desktop. Tema aleasa este pastrata in browser.
@@ -21,5 +18,9 @@ Este necesar Python 3 si Python Launcher (`py`) pe Windows.
 
 ## Date
 
-Notitele sunt salvate in `knowledge.db`, in acest folder. Baza de date copiata
-este independenta de cea a proiectului original.
+Notitele sunt salvate in `knowledge.db`, in acest folder. 
+
+## Ori, mai simplu
+
+Descarcă fișierul, rulează în linia de comandă `.\start.bat` în locația fișierulul. Ex: `cd C:\Users\david\Desktop\my_knowledge_plus
+.\start.bat` (Înlocuiește calea cu locația unde se află fișierul) 
